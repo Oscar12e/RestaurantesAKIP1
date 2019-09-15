@@ -48,9 +48,10 @@ public class MainActivity extends AppCompatActivity {
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
 
-            @Override
+                    @Override
                     public void onSuccess(LoginResult loginResult) {
                         System.out.println("Login good");
+                        acceptSingIn();
                         loginResult.getAccessToken();
                         // App code
                     }
@@ -70,6 +71,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    public void acceptSingIn(){
+        Intent myIntent = new Intent(MainActivity.this, SearchActivity.class);
+        MainActivity.this.startActivity(myIntent);
+    }
+
     public void googleSingIn(){
         System.out.println("GButton pressed");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -82,10 +89,13 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         //updateUI(account);
         System.out.println(account == null);
+
+        //if (account != null) acceptSingIn();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
 
         System.out.println(requestCode);
@@ -96,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
+        } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -103,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             System.out.println(account.getEmail());
+            acceptSingIn();
 
             // Signed in successfully, show authenticated UI.
             //updateUI(account);
